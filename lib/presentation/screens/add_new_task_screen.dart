@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/model/response_object.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/utility/urls.dart';
 import 'package:task_manager/presentation/widgets/background_widget.dart';
 import 'package:task_manager/presentation/widgets/profile_bar.dart';
+import 'package:task_manager/presentation/widgets/snack_bar_message.dart';
 
 class AddNewTaskScreen extends StatefulWidget {
   const AddNewTaskScreen({super.key});
@@ -10,9 +14,11 @@ class AddNewTaskScreen extends StatefulWidget {
 }
 
 class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
-  final TextEditingController _subjectTEController = TextEditingController();
-  final TextEditingController _descriptionTEController = TextEditingController();
+  final TextEditingController _titleTEController = TextEditingController();
+  final TextEditingController _descriptionTEController =
+      TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _addNewTaskInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +45,16 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                       height: 16,
                     ),
                     TextFormField(
-                      controller: _subjectTEController,
+                      controller: _titleTEController,
                       decoration: const InputDecoration(
-                        hintText: "Subject",
+                        hintText: "Title",
                       ),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Enter Your Task Title";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
                       height: 8,
@@ -53,17 +65,31 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                       decoration: const InputDecoration(
                         hintText: "Description",
                       ),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Enter Your Task Description";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
                       height: 16,
                     ),
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: (){
-                          Navigator.pop(context);
-                        },
-                        child: const Icon(Icons.arrow_circle_right_outlined),
+                      child: Visibility(
+                        visible: _addNewTaskInProgress == false,
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _addNewTask();
+                            }
+                          },
+                          child: const Icon(Icons.arrow_circle_right_outlined),
+                        ),
                       ),
                     ),
                   ],
@@ -75,9 +101,34 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       ),
     );
   }
+
+  Future<void> _addNewTask() async {
+    _addNewTaskInProgress = true;
+    setState(() {});
+    Map<String, dynamic> inputParams = {
+      "title": _titleTEController.text.trim(),
+      "description": _descriptionTEController.text.trim(),
+      "status": "New"
+    };
+    final ResponseObject response = await NetworkCaller.postRequest(Urls.createTask, inputParams);
+    _addNewTaskInProgress = false;
+    setState(() {});
+    if(response.isSuccess) {
+      _titleTEController.clear();
+      _descriptionTEController.clear();
+      if(mounted) {
+        showSnackBarMessage(context, "New Task Has been Added");
+      }
+    } else {
+      if(mounted) {
+        showSnackBarMessage(context, response.errorMessage ?? "Add New Task Failed", true);
+      }
+    }
+  }
+
   @override
   void dispose() {
-    _subjectTEController.dispose();
+    _titleTEController.dispose();
     _descriptionTEController.dispose();
     super.dispose();
   }

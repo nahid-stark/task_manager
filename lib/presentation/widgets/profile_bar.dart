@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/app.dart';
+import 'package:task_manager/presentation/controllers/auth_controller.dart';
 import 'package:task_manager/presentation/screens/auth/sign_in_screen.dart';
 import 'package:task_manager/presentation/screens/update_profile_screen.dart';
 import 'package:task_manager/presentation/utils/app_colors.dart';
@@ -29,20 +30,20 @@ PreferredSizeWidget get profileAppbar {
           const SizedBox(
             width: 12,
           ),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hasan",
-                  style: TextStyle(
+                  AuthController.userData?.fullName ?? "",
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white,
                   ),
                 ),
                 Text(
-                  "rabbil@gmail.com",
-                  style: TextStyle(
+                  AuthController.userData?.email ?? "",
+                  style: const TextStyle(
                     fontSize: 12,
                     color: Colors.white,
                     fontWeight: FontWeight.w400,
@@ -52,7 +53,8 @@ PreferredSizeWidget get profileAppbar {
             ),
           ),
           IconButton(
-            onPressed: () {
+            onPressed: () async {
+              await AuthController.clearUserData();
               Navigator.pushAndRemoveUntil(
                 TaskManager.navigatorKey.currentContext!,
                 MaterialPageRoute(

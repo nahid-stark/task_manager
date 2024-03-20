@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/model/task_item.dart';
 
 class TaskCard extends StatelessWidget {
   const TaskCard({
-    super.key,
+    super.key, required this.taskItem,
   });
+
+  final TaskItem taskItem;
 
   @override
   Widget build(BuildContext context) {
@@ -12,13 +15,13 @@ class TaskCard extends StatelessWidget {
       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       color: Colors.white,
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Title will be here"),
-            Text("Description will be here"),
-            Text("Date: 12-02-2024"),
+            Text(taskItem.title ?? ""),
+            Text(taskItem.description ?? ""),
+            Text("Date: ${taskItem.createdDate}"),
             Row(
               children: [
                 Container(
@@ -30,15 +33,15 @@ class TaskCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      "New",
-                      style: TextStyle(
+                      taskItem.status ?? "",
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 SizedBox(
                   height: 25,
                   width: 40,
