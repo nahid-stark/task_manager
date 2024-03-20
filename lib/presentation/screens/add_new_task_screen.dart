@@ -19,80 +19,87 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
       TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _addNewTaskInProgress = false;
+  bool _shouldRefreshNewTaskList = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: profileAppbar,
-      body: BackgroundWidget(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Add New Task",
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontSize: 24,
+    return WillPopScope(
+      onWillPop: () async  {
+        Navigator.pop(context, _shouldRefreshNewTaskList);
+        return false;
+      },
+      child: Scaffold(
+        appBar: profileAppbar,
+        body: BackgroundWidget(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Add New Task",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontSize: 24,
+                            ),
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      TextFormField(
+                        controller: _titleTEController,
+                        decoration: const InputDecoration(
+                          hintText: "Title",
+                        ),
+                        validator: (String? value) {
+                          if (value?.trim().isEmpty ?? true) {
+                            return "Enter Your Task Title";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      TextFormField(
+                        controller: _descriptionTEController,
+                        maxLines: 6,
+                        decoration: const InputDecoration(
+                          hintText: "Description",
+                        ),
+                        validator: (String? value) {
+                          if (value?.trim().isEmpty ?? true) {
+                            return "Enter Your Task Description";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: Visibility(
+                          visible: _addNewTaskInProgress == false,
+                          replacement: const Center(
+                            child: CircularProgressIndicator(),
                           ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    TextFormField(
-                      controller: _titleTEController,
-                      decoration: const InputDecoration(
-                        hintText: "Title",
-                      ),
-                      validator: (String? value) {
-                        if (value?.trim().isEmpty ?? true) {
-                          return "Enter Your Task Title";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    TextFormField(
-                      controller: _descriptionTEController,
-                      maxLines: 6,
-                      decoration: const InputDecoration(
-                        hintText: "Description",
-                      ),
-                      validator: (String? value) {
-                        if (value?.trim().isEmpty ?? true) {
-                          return "Enter Your Task Description";
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Visibility(
-                        visible: _addNewTaskInProgress == false,
-                        replacement: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              _addNewTask();
-                            }
-                          },
-                          child: const Icon(Icons.arrow_circle_right_outlined),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _addNewTask();
+                              }
+                            },
+                            child: const Icon(Icons.arrow_circle_right_outlined),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -114,6 +121,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     _addNewTaskInProgress = false;
     setState(() {});
     if(response.isSuccess) {
+      _shouldRefreshNewTaskList = true;
       _titleTEController.clear();
       _descriptionTEController.clear();
       if(mounted) {
