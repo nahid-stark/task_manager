@@ -12,5 +12,6 @@ class Urls {
   static String deleteTask(String id) => "$_baseUrl/deleteTask/$id";
   static String emailOfPasswordRecoveryProcess(String email) => "$_baseUrl/RecoverVerifyEmail/$email";
   static String otpOfPasswordRecoveryProcess(String email, String otp) => "$_baseUrl/RecoverVerifyOTP/$email/$otp";
+  static String setNewPassword = "$_baseUrl/RecoverResetPass";
   static String updateTaskStatus(String id, String status) => "$_baseUrl/updateTaskStatus/$id/$status";
 }

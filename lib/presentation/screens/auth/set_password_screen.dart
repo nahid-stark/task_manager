@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/model/response_object.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/utility/urls.dart';
+import 'package:task_manager/presentation/controllers/email_otp_holder_temporary.dart';
 import 'package:task_manager/presentation/screens/auth/sign_in_screen.dart';
 import 'package:task_manager/presentation/widgets/background_widget.dart';
 import 'package:task_manager/presentation/widgets/password_visibility_control.dart';
@@ -134,6 +138,15 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _setPassword() async {
+    Map<String, dynamic> params = {
+      "email": EmailAndOtpHolderTemporary.tempEmail,
+      "OTP": EmailAndOtpHolderTemporary.tempOtp,
+      "password": _confirmPasswordTEController.text,
+    };
+    ResponseObject responsse = await NetworkCaller.postRequest(Urls.setNewPassword, params);
   }
 
   @override
