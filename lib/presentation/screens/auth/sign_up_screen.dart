@@ -103,6 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         }
                         return null;
                       },
+                      maxLength: 11,
                     ),
                     const SizedBox(
                       height: 8,

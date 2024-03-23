@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/data/model/response_object.dart';
+import 'package:task_manager/data/model/set_new_password_data.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/data/utility/urls.dart';
 import 'package:task_manager/presentation/controllers/email_otp_holder_temporary.dart';
 import 'package:task_manager/presentation/screens/auth/sign_in_screen.dart';
 import 'package:task_manager/presentation/widgets/background_widget.dart';
 import 'package:task_manager/presentation/widgets/password_visibility_control.dart';
+import 'package:task_manager/presentation/widgets/snack_bar_message.dart';
 
 class SetPasswordScreen extends StatefulWidget {
   const SetPasswordScreen({super.key});
@@ -19,6 +21,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   final TextEditingController _confirmPasswordTEController =
       TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _setNewPasswordInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +69,15 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                         ),
                         hintText: "Password",
                       ),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Enter Your Password";
+                        }
+                        if (value!.length <= 6) {
+                          return "Password Should More Than 6 Letters";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
                       height: 16,
@@ -85,18 +97,43 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                         ),
                         hintText: "Confirm Password",
                       ),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Confirm Your Password";
+                        }
+                        if (value!.length <= 6) {
+                          return "Password Should More Than 6 Letters";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
                       height: 36,
                     ),
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: const Text(
-                          "Confirm",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
+                      child: Visibility(
+                        visible: _setNewPasswordInProgress == false,
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              if (_passwordTEController.text ==
+                                  _confirmPasswordTEController.text) {
+                                _setPassword();
+                              } else {
+                                showSnackBarMessage(
+                                    context, "Password Don't Match", true);
+                              }
+                            }
+                          },
+                          child: const Text(
+                            "Confirm",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
@@ -141,12 +178,43 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
   }
 
   Future<void> _setPassword() async {
+    _setNewPasswordInProgress = true;
+    setState(() {});
     Map<String, dynamic> params = {
       "email": EmailAndOtpHolderTemporary.tempEmail,
       "OTP": EmailAndOtpHolderTemporary.tempOtp,
       "password": _confirmPasswordTEController.text,
     };
-    ResponseObject responsse = await NetworkCaller.postRequest(Urls.setNewPassword, params);
+    ResponseObject response =
+        await NetworkCaller.postRequest(Urls.setNewPassword, params);
+    _setNewPasswordInProgress = true;
+    setState(() {});
+    SetNewPasswordData data = SetNewPasswordData.fronJson(response.responseBody);
+    if(response.isSuccess) {
+      if(data.status == "success") {
+        if (mounted) {
+          showSnackBarMessage(context,
+              "Password Changed Successfully. Please Login!");
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SignInScreen(),
+            ),
+                (route) => false,
+          );
+        }
+      } else {
+        if (mounted) {
+          showSnackBarMessage(context,
+              "Something Wrong. Try again!", true);
+        }
+      }
+    } else {
+      if (mounted) {
+        showSnackBarMessage(context,
+            response.errorMessage ?? "Something Wrong!");
+      }
+    }
   }
 
   @override
