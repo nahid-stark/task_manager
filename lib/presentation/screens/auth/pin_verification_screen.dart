@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_manager/data/model/otp_verification_data.dart';
+import 'package:task_manager/data/model/response_object.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/utility/urls.dart';
+import 'package:task_manager/presentation/controllers/email_otp_holder_temporary.dart';
 import 'package:task_manager/presentation/screens/auth/set_password_screen.dart';
 import 'package:task_manager/presentation/screens/auth/sign_in_screen.dart';
 import 'package:task_manager/presentation/utils/app_colors.dart';
 import 'package:task_manager/presentation/widgets/background_widget.dart';
+import 'package:task_manager/presentation/widgets/snack_bar_message.dart';
 
 class PinVerificationScreen extends StatefulWidget {
   const PinVerificationScreen({super.key});
@@ -15,6 +21,7 @@ class PinVerificationScreen extends StatefulWidget {
 class _PinVerificationScreenState extends State<PinVerificationScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _pinTEController = TextEditingController();
+  bool _otpVerificationInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,19 +82,20 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
                     ),
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SetPasswordScreen(),
+                      child: Visibility(
+                        visible: _otpVerificationInProgress == false,
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _verifyOtp();
+                          },
+                          child: const Text(
+                            "Verify",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
                             ),
-                          );
-                        },
-                        child: const Text(
-                          "Verify",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -129,6 +137,38 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _verifyOtp() async {
+    _otpVerificationInProgress = true;
+    setState(() {});
+    final ResponseObject response = await NetworkCaller.getRequest(Urls.otpOfPasswordRecoveryProcess(EmailAndOtpHolderTemporary.tempEmail!, _pinTEController.text.trim()));
+    _otpVerificationInProgress = false;
+    setState(() {});
+    if(response.isSuccess) {
+      OtpVerificationData data = OtpVerificationData.fronJson(response.responseBody);
+      if(data.status == "success") {
+        EmailAndOtpHolderTemporary.tempOtp = _pinTEController.text.trim();
+        if(mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SetPasswordScreen(),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          showSnackBarMessage(context,
+              "Wrong OTP!", true);
+        }
+      }
+    } else {
+      if (mounted) {
+        showSnackBarMessage(context,
+            response.errorMessage ?? "Something Wrong!");
+      }
+    }
   }
 
   @override
