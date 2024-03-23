@@ -85,6 +85,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       decoration: const InputDecoration(
                         hintText: "First Name",
                       ),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Enter Your First Name";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
                       height: 8,
@@ -95,6 +101,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       decoration: const InputDecoration(
                         hintText: "Last Name",
                       ),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Enter Your Last Name";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
                       height: 8,
@@ -105,6 +117,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       decoration: const InputDecoration(
                         hintText: "Mobile",
                       ),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Enter Your Mobile no.";
+                        }
+                        return null;
+                      },
+                      maxLength: 11,
                     ),
                     const SizedBox(
                       height: 8,
@@ -137,7 +156,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            _updateProfile();
+                            if(_formKey.currentState!.validate()) {
+                              _updateProfile();
+                            }
                           },
                           child: const Icon(Icons.arrow_circle_right_outlined),
                         ),
