@@ -76,7 +76,7 @@ class _CompleteTaskScreenState extends State<CompleteTaskScreen> {
       setState(() {});
       if (mounted) {
         showSnackBarMessage(context,
-            response.errorMessage ?? "Get new task list has been failed!");
+            response.errorMessage ?? "Get Complete task list has been failed!");
       }
     }
   }

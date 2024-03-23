@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:task_manager/app.dart';
 import 'package:task_manager/presentation/controllers/auth_controller.dart';
@@ -24,9 +25,11 @@ PreferredSizeWidget get profileAppbar {
       child: Row(
         children: [
           const SizedBox(
-            width: 30,
+            width: 15,
           ),
-          const CircleAvatar(),
+          CircleAvatar(
+            backgroundImage: _profilePicture(),
+          ),
           const SizedBox(
             width: 12,
           ),
@@ -72,4 +75,12 @@ PreferredSizeWidget get profileAppbar {
       ),
     ),
   );
+}
+
+MemoryImage? _profilePicture() {
+  try {
+    return MemoryImage(base64Decode(AuthController.userData!.photo!));
+  } catch(e) {
+    return null;
+  }
 }

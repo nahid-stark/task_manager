@@ -6,6 +6,10 @@ class Urls {
   static const String taskCountByStatus = "$_baseUrl/taskStatusCount";
   static const String newTaskList = "$_baseUrl/listTaskByStatus/New";
   static const String completedTaskList = "$_baseUrl/listTaskByStatus/Completed";
+  static const String cancelledTaskList = "$_baseUrl/listTaskByStatus/Cancelled";
+  static const String progressTaskList = "$_baseUrl/listTaskByStatus/Progress";
+  static const String profileUpdate = "$_baseUrl/profileUpdate";
   static String deleteTask(String id) => "$_baseUrl/deleteTask/$id";
+  static String emailOfPasswordRecoveryProcess(String email) => "$_baseUrl/RecoverVerifyEmail/$email";
   static String updateTaskStatus(String id, String status) => "$_baseUrl/updateTaskStatus/$id/$status";
 }

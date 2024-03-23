@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/data/model/response_object.dart';
+import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/presentation/screens/auth/pin_verification_screen.dart';
 import 'package:task_manager/presentation/widgets/background_widget.dart';
 
@@ -13,6 +15,7 @@ class EmailVerificationScreen extends StatefulWidget {
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailTEController = TextEditingController();
+  bool _verifyEmailInProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +52,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       controller: _emailTEController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(hintText: "Email"),
+                      validator: (String? value) {
+                        if (value?.trim().isEmpty ?? true) {
+                          return "Enter Your Email";
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(
                       height: 36,
@@ -57,13 +66,15 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const PinVerificationScreen(),
-                            ),
-                          );
+                          if (_formKey.currentState!.validate()) {
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) =>
+                            //     const PinVerificationScreen(),
+                            //   ),
+                            // );
+                          }
                         },
                         child: const Icon(Icons.arrow_circle_right_outlined),
                       ),
@@ -100,6 +111,16 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       ),
     );
   }
+
+  Future<void> _verifyEmail() async{
+    _verifyEmailInProgress = true;
+    setState(() {});
+    final ResponseObject response = await NetworkCaller.getRequest(_emailTEController.text.trim());
+    if(response.isSuccess) {
+
+    }
+  }
+
   @override
   void dispose() {
     _emailTEController.dispose();
