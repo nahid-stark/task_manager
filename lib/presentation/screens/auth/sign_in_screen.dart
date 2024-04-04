@@ -113,13 +113,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const EmailVerificationScreen(),
-                            ),
-                          );
+                          Get.to(() => const EmailVerificationScreen());
                         },
                         child: const Text("Forgot Password?"),
                       ),
@@ -135,12 +129,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SignUpScreen(),
-                              ),
-                            );
+                            Get.to(() => const SignUpScreen());
                           },
                           child: const Text("Sign Up"),
                         ),
@@ -160,13 +149,7 @@ class _SignInScreenState extends State<SignInScreen> {
     final bool result = await signInController.signIn(_emailTEController.text.trim(), _passwordTEController.text);
     if (result) {
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainBottomNavScreen(),
-          ),
-          (route) => false,
-        );
+        Get.off(() => const MainBottomNavScreen());
       }
     } else {
       if (mounted) {
