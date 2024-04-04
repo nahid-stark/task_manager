@@ -47,6 +47,7 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
                 itemCount: _cancelledTaskListWrapper.taskList?.length ?? 0,
                 itemBuilder: (context, index) {
                   return TaskCard(
+                    screenTitle: "CancelledTask",
                     taskItem: _cancelledTaskListWrapper.taskList![index],
                     refreshList: (){
                       _getAllCancelledTaskList();

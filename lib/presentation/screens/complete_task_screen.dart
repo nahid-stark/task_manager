@@ -47,6 +47,7 @@ class _CompleteTaskScreenState extends State<CompleteTaskScreen> {
                 itemCount: _completeTaskListWrapper.taskList?.length ?? 0,
                 itemBuilder: (context, index) {
                   return TaskCard(
+                    screenTitle: "CompleteTask",
                     taskItem: _completeTaskListWrapper.taskList![index],
                     refreshList: (){
                       _getAllCompletedTaskList();

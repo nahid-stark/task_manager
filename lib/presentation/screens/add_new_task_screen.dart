@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:task_manager/data/model/response_object.dart';
 import 'package:task_manager/data/services/network_caller.dart';
 import 'package:task_manager/data/utility/urls.dart';
@@ -114,7 +115,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     setState(() {});
     Map<String, dynamic> inputParams = {
       "title": _titleTEController.text.trim(),
-      "description": _descriptionTEController.text.trim(),
+      "description": "${_descriptionTEController.text.trim()}~${_getDateAndTime()}",
       "status": "New"
     };
     final ResponseObject response = await NetworkCaller.postRequest(Urls.createTask, inputParams);
@@ -139,5 +140,11 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     _titleTEController.dispose();
     _descriptionTEController.dispose();
     super.dispose();
+  }
+
+  String _getDateAndTime() {
+    DateTime now = DateTime.now();
+    String formattedTime = DateFormat('hh:mm a').format(now);
+    return "${now.day}-${now.month}-${now.year} $formattedTime";
   }
 }

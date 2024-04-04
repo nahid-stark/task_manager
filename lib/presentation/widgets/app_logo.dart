@@ -12,5 +12,6 @@ class AppLogo extends StatelessWidget {
     return SvgPicture.asset(
       AssetsPath.iconSvg,
     );
+    //return Image.asset(AssetsPath.taskLogo, height: 120, width: 120,);
   }
 }

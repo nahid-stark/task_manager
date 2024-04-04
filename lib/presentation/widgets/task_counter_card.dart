@@ -10,9 +10,17 @@ class TaskCounterCard extends StatelessWidget {
     required this.title,
   });
 
+  static Map<String, dynamic> colorsByTaskTitle = {
+    "New": Colors.indigo.shade200,
+    "Completed": Colors.green.shade200,
+    "Progress": Colors.purple.shade200,
+    "Cancelled": Colors.red.shade200,
+  };
+
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: colorsByTaskTitle[title],
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24),
         child: Column(
@@ -27,7 +35,8 @@ class TaskCounterCard extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                color: Colors.grey,
+                color: Colors.black54,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],

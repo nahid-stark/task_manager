@@ -48,6 +48,7 @@ class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
                 itemCount: _processTaskListWrapper.taskList?.length ?? 0,
                 itemBuilder: (context, index) {
                   return TaskCard(
+                    screenTitle: "ProgressTask",
                     taskItem: _processTaskListWrapper.taskList![index],
                     refreshList: (){
                       _getAllProgressTaskList();
